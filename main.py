@@ -1,6 +1,6 @@
 from flask import Flask, render_template, redirect, request, make_response, session
-from flask_login import LoginManager, login_user
-from loginform import LoginForm
+from flask_login import LoginManager, login_user, logout_user, login_required
+from loginform import LoginForm, JobsForm
 from data import db_session
 from data.users import User
 from data.jobs import Jobs
@@ -17,19 +17,19 @@ def load_user(user_id):
 
 def main():
     db_session.global_init("db/mars_explorer.sqlite")
-    user = User()
-    user.surname = "Scott"
-    user.name = "Ridley"
-    user.age = 21
-    user.position = "captain"
-    user.speciality = "research engineer"
-    user.address = "module_1"
-    user.email = "scott_chief@mars.org"
-    user.hashed_password = "cap"
-    user.set_password(user.hashed_password)
-    session = db_session.create_session()
-    session.add(user)
-    session.commit()
+    # user = User()
+    # user.surname = "Scott"
+    # user.name = "Ridley"
+    # user.age = 21
+    # user.position = "captain"
+    # user.speciality = "research engineer"
+    # user.address = "module_1"
+    # user.email = "scott_chief@mars.org"
+    # user.hashed_password = "cap"
+    # user.set_password(user.hashed_password)
+    # session = db_session.create_session()
+    # session.add(user)
+    # session.commit()
 
     # user = User()
     # user.surname = "Sun"
@@ -79,6 +79,22 @@ def login():
                                message="Неправильный логин или пароль",
                                form=form)
     return render_template('login.html', title='Авторизация', form=form)
+
+@app.route('/addjob', methods=['GET', 'POST'])
+def addjob():
+    form = JobsForm()
+    if form.validate_on_submit():
+        if session:
+
+            return redirect("/")
+        return redirect('/logout')
+    return render_template('addjob.html', title='44', form=form)
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect("/")
 
 if __name__ == '__main__':
     main()
